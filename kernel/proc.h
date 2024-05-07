@@ -1,3 +1,5 @@
+
+
 // Saved registers for kernel context switches.
 struct context {
   uint64 ra;
@@ -81,6 +83,22 @@ struct trapframe {
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+
+// namespace
+struct namespace {
+
+  struct spinlock lock;
+  struct namespace* parent;
+  struct proc* head;
+  int namespace_id;
+  int level; 
+   
+  int used;
+  int next_namespace_pid;
+  int proc_cnt;
+  
+};
+
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -104,4 +122,15 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  
+  // also use p->lock
+  uint init_ticks;	       // Processor ticks at creation moment
+  uint run_time;               // Total time in running state
+  uint last_run_start;	       // Time of last switch to running state 
+  uint context_switches;       // Number of context switches
+  
+  // namespaces handling
+  struct namespace* ns;
+  int pids[MAXLEVEL];
+  
 };

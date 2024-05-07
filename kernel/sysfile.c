@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "param.h"
 #include "stat.h"
+#include "process_info.h"
 #include "spinlock.h"
 #include "proc.h"
 #include "fs.h"
@@ -64,6 +65,48 @@ sys_dup(void)
   filedup(f);
   return fd;
 }
+
+uint64
+sys_dummy(void)
+{
+  return 0x5555;
+}
+
+// pids in caller namespace of all processes in caller namespace
+uint64
+sys_ps_list(void) {
+  int limit;
+  argint(0, &limit);
+  uint64 pids;
+  argaddr(1, &pids);
+  // new version filling with namespace pids
+  return handle_ps(limit, pids, 0);
+}
+
+
+// global pids of all processes in caller namespace
+uint64
+sys_ps_list_global(void) {
+int limit;
+  argint(0, &limit);
+  uint64 pids;
+  argaddr(1, &pids);
+  // old version filling with global pids
+  return handle_ps(limit, pids, 1);
+}
+
+uint64
+sys_ps_info(void) {
+  int pid;
+  argint(0, &pid);
+  
+  uint64 psinfo;  // user pointer to struct process_info
+  argaddr(1, &psinfo);
+  
+  return handle_ps_info(pid, psinfo);
+}
+
+
 
 uint64
 sys_read(void)

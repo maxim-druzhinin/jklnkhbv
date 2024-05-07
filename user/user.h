@@ -1,7 +1,9 @@
 struct stat;
+struct process_info;
 
 // system calls
 int fork(void);
+int clone(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);
 int pipe(int*);
@@ -19,10 +21,14 @@ int mkdir(const char*);
 int chdir(const char*);
 int dup(int);
 int getpid(void);
+int getppid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-void poweroff(void);
+int dummy(void);
+int ps_list(int, int*);
+int ps_list_global(int, int*);
+int ps_info(int, struct process_info*);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -32,7 +38,6 @@ char* strchr(const char*, char c);
 int strcmp(const char*, const char*);
 void fprintf(int, const char*, ...);
 void printf(const char*, ...);
-char* fgets(int fd, char*, int max);
 char* gets(char*, int max);
 uint strlen(const char*);
 void* memset(void*, int, uint);

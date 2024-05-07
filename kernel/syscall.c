@@ -7,14 +7,6 @@
 #include "syscall.h"
 #include "defs.h"
 
-static uint64
-sys_poweroff(void)
-{
-  printf("Powering off...\n");
-  (*(volatile uint32 *) 0x100000) = 0x5555;
-  panic("poweroff");
-}
-
 // Fetch the uint64 at addr from the current process.
 int
 fetchaddr(uint64 addr, uint64 *ip)
@@ -89,6 +81,7 @@ argstr(int n, char *buf, int max)
 
 // Prototypes for the functions that handle system calls.
 extern uint64 sys_fork(void);
+extern uint64 sys_clone(void);
 extern uint64 sys_exit(void);
 extern uint64 sys_wait(void);
 extern uint64 sys_pipe(void);
@@ -99,6 +92,7 @@ extern uint64 sys_fstat(void);
 extern uint64 sys_chdir(void);
 extern uint64 sys_dup(void);
 extern uint64 sys_getpid(void);
+extern uint64 sys_getppid(void);
 extern uint64 sys_sbrk(void);
 extern uint64 sys_sleep(void);
 extern uint64 sys_uptime(void);
@@ -109,11 +103,16 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
+extern uint64 sys_dummy(void);
+extern uint64 sys_ps_list(void);
+extern uint64 sys_ps_list_global(void);
+extern uint64 sys_ps_info(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
+[SYS_clone]   sys_clone,
 [SYS_exit]    sys_exit,
 [SYS_wait]    sys_wait,
 [SYS_pipe]    sys_pipe,
@@ -124,6 +123,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_chdir]   sys_chdir,
 [SYS_dup]     sys_dup,
 [SYS_getpid]  sys_getpid,
+[SYS_getppid] sys_getppid,
 [SYS_sbrk]    sys_sbrk,
 [SYS_sleep]   sys_sleep,
 [SYS_uptime]  sys_uptime,
@@ -134,7 +134,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_poweroff]   sys_poweroff,
+[SYS_dummy]   sys_dummy,
+[SYS_ps_list] sys_ps_list,
+[SYS_ps_list_global] sys_ps_list_global,
+[SYS_ps_info] sys_ps_info,
 };
 
 void
