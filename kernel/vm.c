@@ -5,6 +5,10 @@
 #include "riscv.h"
 #include "defs.h"
 #include "fs.h"
+#include "spinlock.h"
+#include "proc.h"
+
+
 
 /*
  * the kernel's page table.
@@ -23,6 +27,9 @@ kvmmake(void)
 
   kpgtbl = (pagetable_t) kalloc();
   memset(kpgtbl, 0, PGSIZE);
+
+  // QEMU test interface used for power management
+  kvmmap(kpgtbl, QEMU_POWER, QEMU_POWER, PGSIZE, PTE_R | PTE_W);
 
   // uart registers
   kvmmap(kpgtbl, UART0, UART0, PGSIZE, PTE_R | PTE_W);
@@ -237,6 +244,11 @@ uvmalloc(pagetable_t pagetable, uint64 oldsz, uint64 newsz, int xperm)
     if(mem == 0){
       uvmdealloc(pagetable, a, oldsz);
       return 0;
+    }else {
+      struct proc* p = myproc();
+      acquire(&p->lock);
+      p->heap_pages++;
+      release(&p->lock);
     }
     memset(mem, 0, PGSIZE);
     if(mappages(pagetable, a, PGSIZE, (uint64)mem, PTE_R|PTE_U|xperm) != 0){

@@ -11,5 +11,7 @@
 #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
 #define FSSIZE       2000  // size of file system in blocks
 #define MAXPATH      128   // maximum file path name
-#define MAXLEVEL     8     // maximum depth of namespaces dependency
-#define NNAMESPACES  64    // maximum total number of namespaces 
+
+
+#define MAXDEPTH     8     // max depth ex 7
+#define NUMNS  64  // max number of namespaces 

@@ -47,6 +47,11 @@ usertrap(void)
 
   struct proc *p = myproc();
   
+  //kernel start
+  p->is_kernel = 1;
+  p->last_kernel_time = sys_uptime();
+  
+  
   // save user program counter.
   p->trapframe->epc = r_sepc();
   
@@ -79,6 +84,10 @@ usertrap(void)
   // give up the CPU if this is a timer interrupt.
   if(which_dev == 2)
     yield();
+
+  //back to user
+  p->is_kernel = 0;
+  p->kernel_time += sys_uptime() - p->last_kernel_time;
 
   usertrapret();
 }
@@ -218,4 +227,3 @@ devintr()
     return 0;
   }
 }
-

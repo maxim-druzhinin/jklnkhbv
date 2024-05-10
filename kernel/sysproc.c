@@ -19,30 +19,29 @@ uint64
 sys_getpid(void)
 {
   struct proc* p = myproc();
-  return p->pids[p->ns->level];
+  return p->pids[p->ns->depth];
 }
 
 uint64
 sys_getppid(void)
 {
   struct proc* p = myproc();
-  if (p->ns == p->parent->ns) {
-    return p->parent->pids[p->ns->level];
-  } else {
-    return 0;
+  if (p->ns == p->parent->ns) {   // if same ns
+    return p->parent->pids[p->ns->depth];   // return ppid in this ns
   }
-}
-
-uint64
-sys_fork(void)
-{
-  return fork();
+  return 0; // else
 }
 
 uint64
 sys_clone(void)
 {
   return clone();
+}
+
+uint64
+sys_fork(void)
+{
+  return fork();
 }
 
 uint64

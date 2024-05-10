@@ -67,6 +67,7 @@ test_fork() {
   if (pid1 == 0) {
     printf("Child\n");
     exit(0);
+    printf("Chil11111\n");
   } else {
     sleep(3);
     printf("Parent\n");
@@ -618,8 +619,11 @@ test_task_panic_ns(char *s) {
 int
 main(int argc, char *argv[])
 {
+    printf("HELLO!");
   test_fork();
+  printf("HELLO!");
   test_clone_fork();
+  printf("HELLO!");
   test_task_1_2("Test clone, task 1 and 2");
   test_task_3_4("Test clone, task 3 and 4");
   test_task_5("Test clone task 5");

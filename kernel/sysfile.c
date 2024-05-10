@@ -3,13 +3,12 @@
 // Mostly argument checking, since we don't trust
 // user code, and calls into file.c and fs.c.
 //
-
+#include "process_info.h"
 #include "types.h"
 #include "riscv.h"
 #include "defs.h"
 #include "param.h"
 #include "stat.h"
-#include "process_info.h"
 #include "spinlock.h"
 #include "proc.h"
 #include "fs.h"
@@ -67,32 +66,25 @@ sys_dup(void)
 }
 
 uint64
-sys_dummy(void)
-{
-  return 0x5555;
-}
-
-// pids in caller namespace of all processes in caller namespace
-uint64
 sys_ps_list(void) {
-  int limit;
-  argint(0, &limit);
-  uint64 pids;
-  argaddr(1, &pids);
-  // new version filling with namespace pids
-  return handle_ps(limit, pids, 0);
+    int limit;
+    uint64 pids;
+
+    argint(0, &limit);
+    argaddr(1, &pids);
+
+    return ps_list(limit, pids, 0);
 }
 
-
-// global pids of all processes in caller namespace
 uint64
 sys_ps_list_global(void) {
-int limit;
-  argint(0, &limit);
-  uint64 pids;
-  argaddr(1, &pids);
-  // old version filling with global pids
-  return handle_ps(limit, pids, 1);
+    int limit;
+    uint64 pids;
+
+    argint(0, &limit);
+    argaddr(1, &pids);
+
+    return ps_list(limit, pids, 1);
 }
 
 uint64
@@ -100,13 +92,11 @@ sys_ps_info(void) {
   int pid;
   argint(0, &pid);
   
-  uint64 psinfo;  // user pointer to struct process_info
+  uint64 psinfo;
   argaddr(1, &psinfo);
   
-  return handle_ps_info(pid, psinfo);
+  return ps_info(pid, psinfo);
 }
-
-
 
 uint64
 sys_read(void)
@@ -119,7 +109,13 @@ sys_read(void)
   argint(2, &n);
   if(argfd(0, 0, &f) < 0)
     return -1;
-  return fileread(f, p, n);
+
+  uint64 bytes = fileread(f, p, n);
+  struct proc *ps = myproc();
+  acquire(&ps->lock);
+  ps->read_b += bytes;
+  release(&ps->lock);
+  return bytes;
 }
 
 uint64
@@ -134,7 +130,12 @@ sys_write(void)
   if(argfd(0, 0, &f) < 0)
     return -1;
 
-  return filewrite(f, p, n);
+  uint64 bytes = filewrite(f, p, n);
+  struct proc *ps = myproc();
+  acquire(&ps->lock);
+  ps->write_b += bytes;
+  release(&ps->lock);
+  return bytes;
 }
 
 uint64

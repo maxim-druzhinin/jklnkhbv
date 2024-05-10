@@ -16,7 +16,6 @@ sub entry {
 }
 	
 entry("fork");
-entry("clone");
 entry("exit");
 entry("wait");
 entry("pipe");
@@ -34,11 +33,13 @@ entry("mkdir");
 entry("chdir");
 entry("dup");
 entry("getpid");
-entry("getppid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-entry("dummy");
+entry("poweroff");
+
 entry("ps_list");
-entry("ps_list_global");
 entry("ps_info");
+entry("ps_list_global");
+entry("clone");
+entry("getppid");

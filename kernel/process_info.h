@@ -1,16 +1,22 @@
-#define STATE_SIZE 16 // divisible by 4 to avoid pragma pushes
 #define NAME_SIZE 16
+#define STATE_SIZE 16
+
 
 struct process_info {
-  char state[STATE_SIZE];
-  int parent_pid;		// in the lowest namespace
-  int mem_size;
-  int files_count;
-  char proc_name[NAME_SIZE];
-  uint proc_ticks;
-  uint run_time;
-  uint context_switches;
+    char state[STATE_SIZE];
+    int parent_pid;
+    int mem_size;
+    int files_count;
+    char proc_name[NAME_SIZE];
+    //time
+    int proc_ticks;
+    int run_time;
+    int context_switches;
+    int user_ticks;
+    int kernel_ticks;
+    int waiting_ticks;
+    //memeory
+    int bytes_read;
+    int bytes_write;
+    int pages_count;
 };
-
-//  probably should add int my_pid -- pid in the lowest namespace
-// to awoid calling both ps_list and ps_list_global in ps.c ps list

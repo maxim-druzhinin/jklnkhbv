@@ -19,7 +19,9 @@ main()
     kinit();         // physical page allocator
     kvminit();       // create kernel page table
     kvminithart();   // turn on paging
-    namespaceinit(); // namespaces table    
+    
+    namespaceinit(); // namespaces table
+
     procinit();      // process table
     trapinit();      // trap vectors
     trapinithart();  // install kernel trap vector

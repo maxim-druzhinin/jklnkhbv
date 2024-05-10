@@ -7,8 +7,9 @@ struct proc;
 struct spinlock;
 struct sleeplock;
 struct stat;
-struct process_info;
 struct superblock;
+
+struct process_info;
 
 // bio.c
 void            binit(void);
@@ -83,10 +84,10 @@ void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
 
 // proc.c
+int             clone(void);
 int             cpuid(void);
 void            exit(int);
 int             fork(void);
-int		clone(void);
 int             growproc(int);
 void            proc_mapstacks(pagetable_t);
 pagetable_t     proc_pagetable(struct proc *);
@@ -97,8 +98,10 @@ void            setkilled(struct proc*);
 struct cpu*     mycpu(void);
 struct cpu*     getmycpu(void);
 struct proc*    myproc();
-void		namespaceinit();
 void            procinit(void);
+
+void            namespaceinit();
+
 void            scheduler(void) __attribute__((noreturn));
 void            sched(void);
 void            sleep(void*, struct spinlock*);
@@ -109,9 +112,11 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
-int		handle_ps(int limit, uint64 pids, int global);
-int		handle_ps_info(int pid, uint64 psinfo);
 
+
+int		        ps_list(int limit, uint64 pids, int global);
+int		        ps_info(int pid, uint64 psinfo);
+uint64          sys_uptime(void);
 // swtch.S
 void            swtch(struct context*, struct context*);
 
@@ -145,9 +150,6 @@ void            argaddr(int, uint64 *);
 int             fetchstr(uint64, char*, int);
 int             fetchaddr(uint64, uint64*);
 void            syscall();
-
-// sysproc.c
-uint64		sys_uptime(void);
 
 // trap.c
 extern uint     ticks;
